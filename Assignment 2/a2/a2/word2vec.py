@@ -64,16 +64,15 @@ def naiveSoftmaxLossAndGradient(
     # Please use the provided softmax function (imported earlier in this file)
     # This numerically stable implementation helps you avoid issues pertaining
     # to integer overflow.
-    scores = np.dot(outsideVectors, centerWordVec)
-    probs = softmax(scores)
-
-    loss = -np.log(probs[outsideWordIdx])
-
-    dscores = probs
-    dscores[outsideWordIdx] -= 1
-    gradCenterVec = np.dot(outsideVectors.T, dscores)
-
-    gradOutsideVecs = np.outer(dscores, centerWordVec)
+    center_word = centerWordVec
+    outside_word = outsideVectors[outsideWordIdx]
+    scores = np.dot(outsideVectors, center_word)
+    y_hat = softmax(scores)
+    y = np.zeros_like(y_hat)
+    y[outsideWordIdx] = 1
+    loss = -np.log(y_hat[outsideWordIdx])
+    gradCenterVec = np.dot(outsideVectors.T, y_hat - y)
+    gradOutsideVecs = np.outer(y_hat - y, center_word)
 
     # END YOUR CODE
 
@@ -121,7 +120,18 @@ def negSamplingLossAndGradient(
     # YOUR CODE HERE (~10 Lines)
 
     # Please use your implementation of sigmoid in here.
+    dot_one = np.dot(outsideVectors[outsideWordIdx].T, centerWordVec)
+    neg_samples = outsideVectors[negSampleWordIndices]
+    dot_two = -neg_samples.dot(centerWordVec)
+    loss = -np.log(sigmoid(dot_one)) - np.sum(np.log(sigmoid(dot_two)))
 
+    gradCenterVec = -(1 - sigmoid(dot_one)) * outsideVectors[outsideWordIdx] + np.sum(
+        (np.expand_dims(1 - sigmoid(dot_two), axis=1) * neg_samples), axis=0)
+
+    gradOutsideVecs = np.zeros(shape=outsideVectors.shape)
+    gradOutsideVecs[outsideWordIdx] = -(1 - sigmoid(dot_one)) * centerWordVec
+    for i, neg_idx in enumerate(negSampleWordIndices):
+        gradOutsideVecs[neg_idx] += (1 - sigmoid(dot_two)[i]) * centerWordVec
     # END YOUR CODE
 
     return loss, gradCenterVec, gradOutsideVecs
@@ -165,17 +175,15 @@ def skipgram(currentCenterWord, windowSize, outsideWords, word2Ind,
     loss = 0.0
     gradCenterVecs = np.zeros(centerWordVectors.shape)
     gradOutsideVectors = np.zeros(outsideVectors.shape)
+    loss_gradients = []
 
     # YOUR CODE HERE (~8 Lines)
-    centerWordIdx = word2Ind[currentCenterWord]
-    centerWordVec = centerWordVectors[centerWordIdx]
-
-    for outsideWord in outsideWords:
-        outsideWordIdx = word2Ind[outsideWord]
-        loss_, gradCenterVec, gradOutsideVecs_ = word2vecLossAndGradient(
-            centerWordVec, outsideWordIdx, outsideVectors, dataset)
-        loss += loss_
-        gradCenterVecs[centerWordIdx] += gradCenterVec
+    for word in outsideWords:
+        loss_gradients = list(word2vecLossAndGradient(
+            centerWordVectors[word2Ind[currentCenterWord]], word2Ind[word], outsideVectors, dataset))
+        loss += loss_gradients[0]
+        gradCenterVecs[word2Ind[currentCenterWord]] += loss_gradients[1]
+        gradOutsideVectors += loss_gradients[2]
 
     # END YOUR CODE
 
