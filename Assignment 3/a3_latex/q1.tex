@@ -1,0 +1,65 @@
+\titledquestion{Machine Learning \& Neural Networks}[8] 
+\begin{parts}
+
+    
+    \part[4] Adam Optimizer\newline
+        Recall the standard Stochastic Gradient Descent update rule:
+        \alns{
+            	\btheta_{t+1} &\gets \btheta_t - \alpha \nabla_{\btheta_t} J_{\text{minibatch}}(\btheta_t)
+        }
+        where $t+1$ is the current timestep, $\btheta$ is a vector containing all of the model parameters, ($\btheta_t$ is the model parameter at time step $t$, and $\btheta_{t+1}$ is the model parameter at time step $t+1$), $J$ is the loss function, $\nabla_{\btheta} J_{\text{minibatch}}(\btheta)$ is the gradient of the loss function with respect to the parameters on a minibatch of data, and $\alpha$ is the learning rate.
+        Adam Optimization\footnote{Kingma and Ba, 2015, \url{https://arxiv.org/pdf/1412.6980.pdf}} uses a more sophisticated update rule with two additional steps.\footnote{The actual Adam update uses a few additional tricks that are less important, but we won't worry about them here. If you want to learn more about it, you can take a look at: \url{http://cs231n.github.io/neural-networks-3/\#sgd}}
+            
+        \begin{subparts}
+
+            \subpart[2]First, Adam uses a trick called {\it momentum} by keeping track of $\bm$, a rolling average of the gradients:
+                \alns{
+                	\bm_{t+1} &\gets \beta_1\bm_{t} + (1 - \beta_1)\nabla_{\btheta_t} J_{\text{minibatch}}(\btheta_t) \\
+                	\btheta_{t+1} &\gets \btheta_t - \alpha \bm_{t+1}
+                }
+                where $\beta_1$ is a hyperparameter between 0 and 1 (often set to  0.9). Briefly explain in 2--4 sentences (you don't need to prove mathematically, just give an intuition) how using $\bm$ stops the updates from varying as much and why this low variance may be helpful to learning, overall.\newline
+                
+                \ifans{since $\beta_1$ is a hyper parameter taking the values between $0$ and $1$ and $\beta_1$ is usually in the higher range it only updates a small subset of values in the proportion $1-\beta_1$. This helps us maintain a small variance and reach a local minimum. Updating only the values in $1-\beta_1$ helps prevent the model parameters from moving around too much when moving towards local minimum. at every iteration there is an exponentially decaying average of negative weight gradients which causes the update step not to be instantaneous but rather depend by some amount on previous updates. So momentum prefers flat minima which helps to generalize better.}
+              
+           
+            \subpart[2] Adam extends the idea of {\it momentum} with the trick of {\it adaptive learning rates} by keeping track of  $\bv$, a rolling average of the magnitudes of the gradients:
+                \alns{
+                	\bm_{t+1} &\gets \beta_1\bm_{t} + (1 - \beta_1)\nabla_{\btheta_t} J_{\text{minibatch}}(\btheta_t) \\
+                	\bv_{t+1} &\gets \beta_2\bv_{t} + (1 - \beta_2) (\nabla_{\btheta_t} J_{\text{minibatch}}(\btheta_t) \odot \nabla_{\btheta_t} J_{\text{minibatch}}(\btheta_t)) \\
+                	\btheta_{t+1} &\gets \btheta_t - \alpha \bm_{t+1} / \sqrt{\bv_{t+1}}
+                }
+                where $\odot$ and $/$ denote element-wise multiplication and division (so $\bz \odot \bz$ is elementwise squaring) and $\beta_2$ is a hyper parameter between 0 and 1 (often set to  0.99). Since Adam divides the update by $\sqrt{\bv}$, which of the model parameters will get larger updates?  Why might this help with learning?
+                
+                \ifans{The parameters with the smallest gradients will get the larger updates because, if an accumulated square norm is very small, then dividing learning rate by what is small will cause larger values in corresponding gradient axes, thus larger step sizes.. This means that are at a place where the loss with respect to them is pretty flat will get larger updates, helping them move off the flat areas.}
+           
+                
+                \end{subparts}
+        
+        
+            \part[4] 
+            Dropout\footnote{Srivastava et al., 2014, \url{https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf}} is a regularization technique. During training, dropout randomly sets units in the hidden layer $\bh$ to zero with probability $p_{\text{drop}}$ (dropping different units each minibatch), and then multiplies $\bh$ by a constant $\gamma$. We can write this as:
+                \alns{
+                	\bh_{\text{drop}} = \gamma \bd \odot \bh
+                }
+                where $\bd \in \{0, 1\}^{D_h}$ ($D_h$ is the size of $\bh$)
+                is a mask vector where each entry is 0 with probability $p_{\text{drop}}$ and 1 with probability $(1 - p_{\text{drop}})$. $\gamma$ is chosen such that the expected value of $\bh_{\text{drop}}$ is $\bh$:
+                \alns{
+                	\mathbb{E}_{p_{\text{drop}}}[\bh_\text{drop}]_i = h_i \text{\phantom{aaaa}}
+                }
+                for all $i \in \{1,\dots,D_h\}$. 
+            \begin{subparts}
+            \subpart[2]
+                What must $\gamma$ equal in terms of $p_{\text{drop}}$? Briefly justify your answer or show your math derivation using the equations given above.
+                
+                \ifans{We need to scale the output by $\gamma$ to ensure that the scale of the outputs at test time is identical to the expected outputs at training time. If we dont multiply by $\gamma$ we can see that during training the expected value of any output is: $$E_{p_{drop}}[h_{drop}]_{i} = (1-p_{drop}h_i)$$ During testing when nothing is dropped we would need to multiply the output vector by $(1-p_{drop})$ to match the expectation during training. To keep testing unchanged we would need to apply inverse dropout and multiply the output during training by the inverse of the value. $$\gamma = \frac{1}{1-p_{drop}}$$}
+                
+            
+          \subpart[2] Why should dropout be applied during training? Why should dropout \textbf{NOT} be applied during evaluation? (Hint: it may help to look at the paper linked above in the write-up.) \newline
+          \ifans{Dropout is a regularization technique that minimizes the chances of the neural network being too dependent on one particular feature for prediction and also prevents over-fitting. It does this by dropping out some of the input values to 0. This way the network learns to be not dependent on specific nodes for prediction and learns to average the many nodes. \newline
+          	We do not want to do this during evaluation as we want to evaluate the neural network at full capacity and we want the neural network to depend on all the nodes for predictions during testing. We want to use all the information from the trained neurons and thus we do not use dropout technique when we are evaluating. 
+          }
+         
+        \end{subparts}
+
+
+\end{parts}
