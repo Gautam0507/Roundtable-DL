@@ -6,7 +6,7 @@
 
     \part[3] Look at the {\monofam{src.vocab}} file for some examples of phrases and words in the source language vocabulary. When encoding an input Mandarin Chinese sequence into ``pieces'' in the vocabulary, the tokenizer maps the sequence to a series of vocabulary items, each consisting of one or more characters (thanks to the {\monofam{sentencepiece}} tokenizer, we can perform this segmentation even when the original text has no white space). Given this information, how could adding a 1D Convolutional layer after the embedding layer and before passing the embeddings into the bidirectional encoder help our NMT system? \textbf{Hint:} each Mandarin Chinese character is either an entire word or a morpheme in a word. Look up the meanings of 电, 脑, and 电脑 separately for an example. The characters 电 (electricity) and  脑 (brain) when combined into the phrase 电脑 mean computer.
 
-    \ifans{}
+    \ifans{In Neural Machine translation (NMT), the role of the tokenizer is to break down the input sequence into smaller pieces or tokens. Adding a 1D Concolutional layer after the embedding can help the NMT system capture local dependencies within the input sequence. The layer acts like a feature extractor tat identifies and preserves these local decencies before the sequence is passed in to the bidirectional encoder. }
 
 
     \part[8] Here we present a series of errors we found in the outputs of our NMT model (which is the same as the one you just trained). For each example of a reference (i.e., `gold') English translation, and NMT (i.e., `model') English translation, please:
@@ -25,7 +25,11 @@
         \textbf{Reference Translation:} \textit{\underline{the culprits were} subsequently arrested and convicted.}\newline
         \textbf{NMT Translation:} \textit{\underline{the culprit was} subsequently arrested and sentenced to theft.}
         
-        \ifans{}
+        \ifans{ 1. \newline\textbf{Error Identification:} The NMT translation incorrectly translates "贼人" as "the culprit" (singular) instead of "the culprits" (plural) as in the reference translation.
+        	
+        	2. \textbf{Possible Reason:} This could be due to the fact that in Mandarin, plurality is not always explicitly marked on the noun. The model might have learned to default to the singular form when the plurality is not explicitly marked in the source sentence.
+        	
+        	3. \textbf{Possible Fix:} One possible way to fix this error could be to incorporate a better handling of plurality in the model. This could be achieved by using a more sophisticated attention mechanism that can better capture such nuances in the source sentence. Additionally, using a larger training dataset that includes more examples of plural nouns could also help the model learn this aspect of the language better.}
 
 
         \subpart[2]
@@ -33,21 +37,33 @@
         \textbf{Reference Translation}: \textit{there is almost no space to accommodate these people, and resources have run out.   }\newline
         \textbf{NMT Translation}: \textit{the resources have been exhausted and \underline{resources have been exhausted}.}
         
-        \ifans{}
+        \ifans{\newline 1. \textbf{Error Identification:} The NMT translation incorrectly repeats the phrase "resources have been exhausted" and completely misses the first part of the sentence about there being almost no space to accommodate these people.
+        	
+        	2. \textbf{Possible Reason:} This could be due to an error in the attention mechanism of the model where it incorrectly gave more weight to the latter part of the sentence about resources being exhausted and missed the first part of the sentence.
+        	
+        	3. \textbf{Possible Fix:} One possible way to fix this error could be to improve the attention mechanism of the model so that it can better capture all parts of the source sentence. Additionally, using a larger and more diverse training dataset could also help the model learn to handle such sentences better. Another possible solution could be to incorporate a mechanism in the model that penalizes repeated phrases to avoid such repetition errors.}
 
         \subpart[2]
         \textbf{Source Sentence}: 当局已经宣布今天是国殇日。 \newline
         \textbf{Reference Translation}: \textit{authorities have announced \underline{a national mourning today.}}\newline
         \textbf{NMT Translation}: \textit{the administration has announced \underline{today's day.}}
         
-        \ifans{}
+        \ifans{\newline 1. \textbf{Error Identification:} The NMT translation incorrectly translates "国殇日" as "today's day" instead of "a national mourning today" as in the reference translation.
+        	
+        	2. \textbf{Possible Reason:} This could be due to the model not correctly learning the mapping of "国殇日" to "a national mourning day". It might be because such phrases are less common and thus the model has not seen enough examples during training to learn this correctly.
+        	
+        	3. \textbf{Possible Fix:} One possible way to fix this error could be to include more examples of such phrases in the training data so that the model can learn the correct mapping. Additionally, using a larger and more diverse training dataset could also help the model learn to handle such sentences better. Another possible solution could be to incorporate a mechanism in the model that penalizes incorrect translations to avoid such errors.}
         
         \subpart[2] 
         \textbf{Source Sentence\footnote{This is a Cantonese sentence! The data used in this assignment comes from GALE Phase 3, which is a compilation of news written in simplified Chinese from various sources scraped from the internet along with their translations. For more details, see \url{https://catalog.ldc.upenn.edu/LDC2017T02}. }:} 俗语有云:``唔做唔错"。\newline
         \textbf{Reference Translation:} \textit{\underline{`` act not, err not "}, so a saying goes.}\newline
         \textbf{NMT Translation:} \textit{as the saying goes, \underline{`` it's not wrong. "}}
         
-        \ifans{}
+        \ifans{\newline 1. \textbf{Error Identification:} The NMT translation incorrectly translates "唔做唔错" as "it's not wrong" instead of "act not, err not" as in the reference translation.
+        	
+        	2. \textbf{Possible Reason:} This could be due to the model not correctly learning the mapping of "唔做唔错" to "act not, err not". It might be because such phrases are less common and thus the model has not seen enough examples during training to learn this correctly.
+        	
+        	3. \textbf{Possible Fix:} One possible way to fix this error could be to include more examples of such phrases in the training data so that the model can learn the correct mapping. Additionally, using a larger and more diverse training dataset could also help the model learn to handle such sentences better. Another possible solution could be to incorporate a mechanism in the model that penalizes incorrect translations to avoid such errors.}
     \end{subparts}
 
 
@@ -90,19 +106,112 @@
         
         Which of the two NMT translations is considered the better translation according to the BLEU Score? Do you agree that it is the better translation?
         
-        \ifans{}
+        \ifans{Here is a list of different \texttt{n-grams} (only considering $1-2$\texttt{-grams}) from NMT translations and their counts in brackets (in $\mathbf{c}$| in $\mathbf{r}_1$ | in $\mathbf{r}_2$):
+        	\begin{enumerate}
+        		\item $\mathbf{c}_1$
+        		\begin{itemize}
+        			\item \textbf{1-grams}: \textit{and} (2|1|2), \textit{the} (3|3|3), \textit{light} (1|1|1), \textit{shines} (1|1|1), \textit{in} (1|1|1), \textit{darkness} (2|2|2), \textit{can} (1|0|0), \textit{not} (1|1|1), \textit{comprehend} (1|0|1).
+        			\item \textbf{2-grams}: \textit{and the} (2|1|2), \textit{the light} (1|1|1), \textit{light shines} (1|1|1), \textit{shines in} (1|1|1), \textit{in the} (1|1|1), \textit{the darkness} (2|2|2), \textit{darkness and} (1|1|1), \textit{darkness can} (1|0|0), \textit{can not} (1|0|0), \textit{not comprehend} (1|0|1).
+        		\end{itemize}
+        		\item $\mathbf{c}_2$
+        		\begin{itemize}
+        			\item \textbf{1-grams}: \textit{the} (4|3|3), \textit{light} (1|1|1), \textit{shines} (1|1|1), \textit{darkness} (2|2|2), \textit{has} (1|1|0), \textit{not} (1|1|1), \textit{in} (1|1|1), \textit{and} (1|1|2), \textit{trials} (1|0|0).
+        			\item \textbf{2-grams}: \textit{the light} (1|1|1), \textit{light shines} (1|1|1), \textit{shines the} (1|0|0), \textit{the darkness} (2|2|2), \textit{darkness has} (1|1|0), \textit{has not} (1|1|0), \textit{not in} (1|0|0), \textit{in the} (1|1|1), \textit{darkness and} (1|1|1), \textit{and the} (1|1|2), \textit{the trials} (1|0|0).
+        		\end{itemize}
+        	\end{enumerate}
+        	
+        	$p_1$ and $p_2$ for both $\mathbf{c}_1$ and $\mathbf{c}_2$ are now easy to compute:
+        	\begin{equation}
+        		p_{1, \mathbf{c}_1} = \frac{2+3+1+1+1+2+0+1+1}{2+3+1+1+1+2+1+1+1} = \frac{12}{13} \approx 0.9231
+        	\end{equation}
+        	\begin{equation}
+        		p_{2, \mathbf{c}_1} = \frac{2+1+1+1+1+2+1+0+0+1}{2+1+1+1+1+2+1+1+1+1} = \frac{10}{12} \approx 0.8333
+        	\end{equation}
+        	\begin{equation}
+        		p_{1, \mathbf{c}_2} = \frac{3+1+1+2+1+1+1+1+0}{4+1+1+2+1+1+1+1+1} = \frac{11}{13} \approx 0.8462
+        	\end{equation}
+        	\begin{equation}
+        		p_{2, \mathbf{c}_2} = \frac{1+1+0+2+1+1+0+1+1+1+0}{1+1+1+2+1+1+1+1+1+1+1} = \frac{9}{12} = 0.7500
+        	\end{equation}
+        	
+        	Now we can compute $len(c)$ and $len(r)$ for both $\mathbf{c}_1$ and $\mathbf{c}_2$. Note that in both cases $\mathbf{r_1}$ is closer to NMT translation lengths thus its length will be checked:
+        	\begin{equation}
+        		len(c)_{\mathbf{c}_1}=13;\ \text{ }\ len(r)_{\mathbf{c_1}}=13
+        	\end{equation}
+        	\begin{equation}
+        		len(c)_{\mathbf{c}_2}=13;\ \text{ }\ len(r)_{\mathbf{c_2}}=13
+        	\end{equation}
+        	
+        	Since in both cases $len(c)=len(r)$, BP will be $1$ for both $\mathbf{c}_1$ and $\mathbf{c}_2$:
+        	\begin{equation}
+        		BP_{\mathbf{c}_1}=1
+        	\end{equation}
+        	\begin{equation}
+        		BP_{\mathbf{c}_2}=1
+        	\end{equation}
+        	Now we just substitute the numbers and compute BLEU score, given that $\lambda_1=0.5$ and $\lambda_2=0.5$ for both $\mathbf{c}_1$ and $\mathbf{c}_2$. Since $\lambda_3=0$ and $\lambda_4=0$ are for both $\mathbf{c}_1$ and $\mathbf{c}_2$, we just ignore those terms during summation operation:
+        	\begin{equation}
+        		BLEU_{\mathbf{c}_1}=BP_{\mathbf{c}_1}\times\exp\left(\lambda_1\log p_{1, \mathbf{c}_1}+\lambda_2\log p_{2, \mathbf{c}_1}\right)\approx 0.8771
+        	\end{equation}
+        	\begin{equation}
+        		BLEU_{\mathbf{c}_2}=BP_{\mathbf{c}_2}\times\exp\left(\lambda_1\log p_{1, \mathbf{c}_2}+\lambda_2\log p_{2, \mathbf{c}_2}\right)\approx 0.7966
+        	\end{equation}
+        	
+        	The better translation is $\mathbf{c}_1$ since $BLEU_{\mathbf{c}_1}>BLEU_{\mathbf{c}_2}$. This is indeed reflected in the translation as it is more similar to the reference sentences and has a more logical flow than $\mathbf{c}_2$.}
         
         \subpart[5] Our hard drive was corrupted and we lost Reference Translation $\br_1$. Please recompute BLEU scores for $\bc_1$ and $\bc_2$, this time with respect to $\br_2$ only. Which of the two NMT translations now receives the higher BLEU score? Do you agree that it is the better translation?
         
-        \ifans{}
+        \ifans{ Keeping the same lists of \texttt{n-grams}, it is easy to recompute $p_1$ and $p_2$ for $\mathbf{c}_1$ and $\mathbf{c}_2$:
+        		
+        		\begin{equation}
+        			p_{1, \mathbf{c}_1} = \frac{1+3+1+1+1+2+0+1+0}{2+3+1+1+1+2+1+1+1} = \frac{10}{13} \approx 0.7692
+        		\end{equation}
+        		\begin{equation}
+        			p_{2, \mathbf{c}_1} = \frac{1+1+1+1+1+2+1+0+0+0}{2+1+1+1+1+2+1+1+1+1} = \frac{8}{12} \approx 0.6667
+        		\end{equation}
+        		\begin{equation}
+        			p_{1, \mathbf{c}_2} = \frac{3+1+1+2+1+1+1+1+0}{4+1+1+2+1+1+1+1+1} = \frac{11}{13} \approx 0.8462
+        		\end{equation}
+        		\begin{equation}
+        			p_{2, \mathbf{c}_2} = \frac{1+1+0+2+1+1+0+1+1+1+0}{1+1+1+2+1+1+1+1+1+1+1} = \frac{9}{12} \approx 0.7500
+        		\end{equation}
+        		
+        		$len(c)$ and $len(r)$ for both $\mathbf{c}_1$ and $\mathbf{c}_2$ will be the same because there is only $\mathbf{r}_1$ which is the same as when both sentences were available. This means that both BC are also the same.
+        		\begin{equation}
+        			BP_{\mathbf{c}_1}=1
+        		\end{equation}
+        		\begin{equation}
+        			BP_{\mathbf{c}_2}=1
+        		\end{equation}
+        		
+        		Finally, we can recompute the BLEU score by applying the same formula and the same $\lambda$ constants:
+        		\begin{equation}
+        			BLEU_{\mathbf{c}_1}=BP_{\mathbf{c}_1}\times\exp\left(\lambda_1\log p_{1, \mathbf{c}_1}+\lambda_2\log p_{2, \mathbf{c}_1}\right)\approx 0.7161
+        		\end{equation}
+        		\begin{equation}
+        			BLEU_{\mathbf{c}_2}=BP_{\mathbf{c}_2}\times\exp\left(\lambda_1\log p_{1, \mathbf{c}_2}+\lambda_2\log p_{2, \mathbf{c}_2}\right)\approx 0.7966
+        		\end{equation}
+        		Now the second translation $\mathbf{c}_1$ receives the higher score. That is because of more \texttt{n-gram} co-ocurances between $\mathbf{c}_1$ and $\mathbf{r}_1$ than between $\mathbf{c}_2$ and $\mathbf{r}_1$. However, those co-ocurances are not in the similar places - in $\mathbf{c}_2$ they do not seem to have a logical structure (e.g., ``the darkness has not in the darkness''). This could be solved by taking into account \texttt{3-grams} and \texttt{4-grams}. Thus the better score does not justify the translation.}
         
         \subpart[2] Due to data availability, NMT systems are often evaluated with respect to only a single reference translation. Please explain (in a few sentences) why this may be problematic. In your explanation, discuss how the BLEU score metric assesses the quality of NMT translations when there are multiple reference transitions versus a single reference translation.
         
-        \ifans{}
+        \ifans{When there are multiple reference translations, maximum number of some particular \texttt{n-grams} is taken across all references when computing the summation term in the numerator of $p_n$ meaning the captured \texttt{n-gram} in the NMT translation is given more chances to occur at least the same number of times as in the NMT translation. That way $p_n$ is not reduced and the higher it is, the higher BLEU is. This suggests that NMT translation could be very valid, it just may be some form of alternative and not considering that may lead to not very accurate BLEU scores.}
         
         \subpart[2] List two advantages and two disadvantages of BLEU, compared to human evaluation, as an evaluation metric for Machine Translation. 
         
-        \ifans{}
+        \ifans{\begin{enumerate}
+        		\item \textbf{Advantages}:
+        		\begin{enumerate}
+        			\item \textit{Automated} - does not need human resources, is reliable and does not make errors
+        			\item \textit{Fast} - evaluation for a single NMT translation is very fast
+        			\item \textit{Language-independent} - same metrics works for every language
+        		\end{enumerate}
+        		\item \textbf{Disadvantages}:
+        		\begin{enumerate}
+        			\item \textit{Structure-independent} - it does not consider the natural flow of the sentences, the score is mainly based on \texttt{n-gram} co-ocurrance counts which could happen randomly in sentences
+        			\item \textit{Resource-dependent} - requires at least several reference sentences in order to properly evaluate the NMT translation
+        	\end{enumerate}
+        \end{enumerate}}
         
     \end{subparts}
 \end{parts}

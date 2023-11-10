@@ -134,7 +134,8 @@ Note that this virtual environment \textbf{will not} be needed on the VM.\newlin
     First explain (in around three sentences) what effect the masks have on the entire attention computation.
     Then explain (in one or two sentences) why it is necessary to use the masks in this way.
 
-    \ifans{}
+    \ifans{1. \textbf{What effect: }for every batch, those attention scores which have corresponding zero-padded embeddings are set to $-\infty$. This way, during the calculation of \textit{attention distributions} $\b\alpha_t$, the probabilities are calculated over scores with corresponding non-padded words whereas the scores with corresponding padded words are negligible. Finally, during the calculation of \textit{attention outputs} $A_t$, for every batch only the addition of those hidden states matter which are not multiplied by a probability close to $0$. \newline
+    2. \textbf{Why necessary: }using masks in this way is an efficient way to determine the true \textit{attention distribution} that only involves the non-padded entries. Involving padded entries would result in false \textit{attention} representation.}
 \end{parts}
 
 Now it's time to get things running! As noted earlier, we recommend that you develop the code on your personal computer.  Confirm that you are running in the proper conda environment and then execute the following command to train the model on your local machine:
@@ -206,5 +207,7 @@ sh run.sh test
     \subpart[2] Explain one advantage and one disadvantage of \textit{additive attention} compared to multiplicative attention.
     \end{subparts}
             
-    \ifans{}
+    \ifans{i.) An advantage of dot product attention compared to multiplicative attention is that it does not have any learnable parameters and it is a vector dot product, and thus is very fast to compute. A simple dot product does not provide much information and is not sufficient to capture the intricacies on the other hand.
+    \newline
+    ii.) The advantage is that the similarity is computed in a non-linearly transformed space. This adds more flexibility in terms of parameter space. The disadvantage is that computation is expensive. }
 \end{parts}

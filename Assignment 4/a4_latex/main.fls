@@ -1,0 +1,23 @@
+PWD c:\Users\GAUTAM\Desktop\aiml\git\Assignment 4\a4_latex
+INPUT C:\Users\GAUTAM\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
+INPUT c:\Users\GAUTAM\Desktop\aiml\git\Assignment 4\a4_latex\main.tex
+OUTPUT main.log
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\exam\exam.cls
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\exam\exam.cls
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\ifthen.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\ifthen.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\article.cls
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\article.cls
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\xelatex\xecjk\xeCJK.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\xelatex\xecjk\xeCJK.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\l3kernel\expl3.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\l3kernel\expl3.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\l3packages\xparse\xparse.sty
+INPUT C:\Users\GAUTAM\AppData\Local\Programs\MiKTeX\tex\latex\l3packages\xparse\xparse.sty
